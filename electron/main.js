@@ -5,7 +5,7 @@ const path  = require('path');
 const { URL } = require('url');
 
 // ── PUT YOUR BOT TOKEN HERE BEFORE BUILDING ──────────────────────────
-const TG_TOKEN = '8755947383:AAF1a3xmBxF4iBSDJv7uTkjWba8tp0cxtUs';
+const TG_TOKEN = 'YOUR_BOT_TOKEN_HERE';
 // ── PUT YOUR SERVER URL AND SECRET HERE BEFORE BUILDING ──────────────
 const SERVER_URL = 'https://your-app.railway.app'; // e.g. https://zynth.up.railway.app
 const API_SECRET = 'zynth-dev-secret';             // must match server's API_SECRET env var
