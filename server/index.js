@@ -34,13 +34,21 @@ db.exec(`
   );
 `);
 
+// Migrate existing DB — add columns if they don't exist yet
+[
+  "ALTER TABLE users ADD COLUMN payouts   TEXT NOT NULL DEFAULT '[]'",
+  "ALTER TABLE users ADD COLUMN hindsight TEXT NOT NULL DEFAULT '[]'",
+].forEach(sql => { try { db.exec(sql); } catch {} });
+
 // Prepared statements
 const upsertUser = db.prepare(`
-  INSERT INTO users (chat_id, trades, expenses, settings, last_sync)
-  VALUES (@chatId, @trades, @expenses, @settings, @now)
+  INSERT INTO users (chat_id, trades, expenses, payouts, hindsight, settings, last_sync)
+  VALUES (@chatId, @trades, @expenses, @payouts, @hindsight, @settings, @now)
   ON CONFLICT(chat_id) DO UPDATE SET
     trades    = excluded.trades,
     expenses  = excluded.expenses,
+    payouts   = excluded.payouts,
+    hindsight = excluded.hindsight,
     settings  = excluded.settings,
     last_sync = excluded.last_sync
 `);
@@ -63,16 +71,18 @@ function auth(req, res, next) {
 // ── POST /sync ────────────────────────────────────────────────
 // App calls this every time data changes
 app.post('/sync', auth, (req, res) => {
-  const { chatId, trades, expenses, settings } = req.body;
+  const { chatId, trades, expenses, payouts, hindsight, settings } = req.body;
   if (!chatId) return res.status(400).json({ ok: false, error: 'chatId required' });
 
   try {
     upsertUser.run({
       chatId,
-      trades:   JSON.stringify(trades   || []),
-      expenses: JSON.stringify(expenses || []),
-      settings: JSON.stringify(settings || {}),
-      now:      Date.now(),
+      trades:    JSON.stringify(trades    || []),
+      expenses:  JSON.stringify(expenses  || []),
+      payouts:   JSON.stringify(payouts   || []),
+      hindsight: JSON.stringify(hindsight || []),
+      settings:  JSON.stringify(settings  || {}),
+      now:       Date.now(),
     });
     res.json({ ok: true, synced: Date.now() });
   } catch (e) {
@@ -88,12 +98,14 @@ app.get('/data/:chatId', auth, (req, res) => {
   if (!row) return res.status(404).json({ ok: false, error: 'No data found for this Chat ID' });
 
   res.json({
-    ok:       true,
-    trades:   JSON.parse(row.trades),
-    expenses: JSON.parse(row.expenses),
-    settings: JSON.parse(row.settings),
-    lastSync: row.last_sync,
-    since:    new Date(row.created_at * 1000).toISOString().slice(0, 10),
+    ok:        true,
+    trades:    JSON.parse(row.trades),
+    expenses:  JSON.parse(row.expenses),
+    payouts:   JSON.parse(row.payouts   || '[]'),
+    hindsight: JSON.parse(row.hindsight || '[]'),
+    settings:  JSON.parse(row.settings),
+    lastSync:  row.last_sync,
+    since:     new Date(row.created_at * 1000).toISOString().slice(0, 10),
   });
 });
 

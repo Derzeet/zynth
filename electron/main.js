@@ -5,10 +5,10 @@ const path  = require('path');
 const { URL } = require('url');
 
 // ── PUT YOUR BOT TOKEN HERE BEFORE BUILDING ──────────────────────────
-const TG_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+const TG_TOKEN = '8755947383:AAF1a3xmBxF4iBSDJv7uTkjWba8tp0cxtUs';
 // ── PUT YOUR SERVER URL AND SECRET HERE BEFORE BUILDING ──────────────
-const SERVER_URL = 'https://your-app.railway.app'; // e.g. https://zynth.up.railway.app
-const API_SECRET = 'zynth-dev-secret';             // must match server's API_SECRET env var
+const SERVER_URL = 'https://zynth-production.up.railway.app';
+const API_SECRET = 'zynth-dev-secret'; // must match server's API_SECRET env var
 // ─────────────────────────────────────────────────────────────────────
 
 let win;
@@ -30,6 +30,9 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, '..', 'index.html'));
+
+  win.on('enter-full-screen', () => win.webContents.send('fullscreen-change', true));
+  win.on('leave-full-screen',  () => win.webContents.send('fullscreen-change', false));
 }
 
 app.whenReady().then(() => {
@@ -134,12 +137,12 @@ function serverRequest(method, urlPath, body) {
 }
 
 // Sync local data to server
-ipcMain.handle('sync-data', async (_e, { chatId, trades, expenses, settings }) => {
+ipcMain.handle('sync-data', async (_e, { chatId, trades, expenses, payouts, hindsight, settings }) => {
   if (!SERVER_URL || SERVER_URL === 'https://your-app.railway.app') {
     return { ok: false, error: 'Server URL not configured' };
   }
   try {
-    return await serverRequest('POST', '/sync', { chatId, trades, expenses, settings });
+    return await serverRequest('POST', '/sync', { chatId, trades, expenses, payouts, hindsight, settings });
   } catch (e) {
     return { ok: false, error: String(e) };
   }
