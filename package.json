@@ -1,0 +1,31 @@
+{
+  "name": "zynth",
+  "version": "1.0.0",
+  "description": "ICT Trading Journal",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.zynth.journal",
+    "productName": "ZYNTH",
+    "mac": {
+      "category": "public.app-category.finance",
+      "darkMode": true
+    },
+    "dmg": {
+      "title": "Install ZYNTH",
+      "window": { "width": 540, "height": 380 }
+    },
+    "files": [
+      "index.html",
+      "electron/**/*",
+      "Group 4.svg"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
