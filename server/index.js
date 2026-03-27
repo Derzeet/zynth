@@ -103,6 +103,22 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, users: count, time: new Date().toISOString() });
 });
 
+// ── POST /webhook — Telegram bot webhook ──────────────────────
+app.post('/webhook', (req, res) => {
+  res.sendStatus(200); // always ack immediately
+  const msg = req.body && req.body.message;
+  if (!msg) return;
+  const chatId = String(msg.chat.id);
+  const text   = (msg.text || '').trim();
+  if (text === '/start' || text.startsWith('/start ')) {
+    tgSend(chatId,
+      `👋 <b>Welcome to ZYNTH Journal!</b>\n\n` +
+      `Your Chat ID is:\n<code>${chatId}</code>\n\n` +
+      `Copy it and paste into <b>Settings → Telegram Chat ID</b> in the ZYNTH app.`
+    );
+  }
+});
+
 // ── Telegram ──────────────────────────────────────────────────
 function tgSend(chatId, text) {
   if (!TG_TOKEN) return Promise.resolve({ ok: false });
@@ -283,9 +299,29 @@ cron.schedule('0 8 * * 1-5', async () => {
 }, { timezone: 'America/New_York' });
 
 // ── Start ─────────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   const userCount = db.prepare('SELECT COUNT(*) as n FROM users').get().n;
   console.log(`\n🟢 ZYNTH server running on port ${PORT}`);
   console.log(`   Users in DB: ${userCount}`);
-  console.log(`   Telegram:    ${TG_TOKEN ? 'configured' : 'NOT SET'}\n`);
+  console.log(`   Telegram:    ${TG_TOKEN ? 'configured' : 'NOT SET'}`);
+
+  // Register webhook
+  if (TG_TOKEN && process.env.RAILWAY_PUBLIC_DOMAIN) {
+    const webhookUrl = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/webhook`;
+    const body = JSON.stringify({ url: webhookUrl });
+    const req = https.request({
+      hostname: 'api.telegram.org',
+      path: `/bot${TG_TOKEN}/setWebhook`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+    }, (res) => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => console.log(`   Webhook:     ${d}\n`));
+    });
+    req.write(body);
+    req.end();
+  } else {
+    console.log(`   Webhook:     skipped (RAILWAY_PUBLIC_DOMAIN not set)\n`);
+  }
 });
