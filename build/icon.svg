@@ -1,0 +1,74 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- background gradient: white top → pale sky bottom -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#daeeff"/>
+    </linearGradient>
+    <!-- subtle radial glow behind symbol -->
+    <radialGradient id="centerGlow" cx="50%" cy="48%" r="40%">
+      <stop offset="0%"   stop-color="#c0e8ff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#daeeff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="blur1"/>
+      <feGaussianBlur stdDeviation="5"  result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow-dim" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bgGrad)"/>
+  <!-- center radial glow -->
+  <rect width="1024" height="1024" rx="220" fill="url(#centerGlow)"/>
+
+  <!-- outer tech frame -->
+  <rect x="48" y="48" width="928" height="928" rx="180" stroke="rgba(0,120,200,0.12)" stroke-width="1.5" fill="none"/>
+
+  <!-- corner brackets -->
+  <path d="M80,160 L80,80 L160,80"    stroke="#0088cc" stroke-width="8" stroke-linecap="square" fill="none" opacity="0.35" filter="url(#glow-dim)"/>
+  <path d="M864,80 L944,80 L944,160"  stroke="#0088cc" stroke-width="8" stroke-linecap="square" fill="none" opacity="0.35" filter="url(#glow-dim)"/>
+  <path d="M80,864 L80,944 L160,944"  stroke="#0088cc" stroke-width="8" stroke-linecap="square" fill="none" opacity="0.35" filter="url(#glow-dim)"/>
+  <path d="M864,944 L944,944 L944,864" stroke="#0088cc" stroke-width="8" stroke-linecap="square" fill="none" opacity="0.35" filter="url(#glow-dim)"/>
+
+  <!-- circuit traces -->
+  <line x1="200" y1="80" x2="300" y2="80" stroke="rgba(0,120,200,0.18)" stroke-width="3"/>
+  <circle cx="300" cy="80" r="6" fill="rgba(0,120,200,0.3)" filter="url(#glow-dim)"/>
+  <line x1="724" y1="944" x2="824" y2="944" stroke="rgba(0,120,200,0.18)" stroke-width="3"/>
+  <circle cx="724" cy="944" r="6" fill="rgba(0,120,200,0.3)" filter="url(#glow-dim)"/>
+  <line x1="80" y1="440" x2="80" y2="584" stroke="rgba(0,120,200,0.15)" stroke-width="3"/>
+  <line x1="944" y1="440" x2="944" y2="584" stroke="rgba(0,120,200,0.15)" stroke-width="3"/>
+  <circle cx="80"  cy="512" r="5" fill="rgba(0,120,200,0.25)"/>
+  <circle cx="944" cy="512" r="5" fill="rgba(0,120,200,0.25)"/>
+
+  <!-- outer ring -->
+  <circle cx="512" cy="512" r="480" stroke="rgba(0,120,200,0.07)" stroke-width="1" fill="none"/>
+
+  <!-- Zynth symbol — scaled and centered -->
+  <g transform="translate(232,109) scale(0.1654)" filter="url(#glow)">
+    <circle cx="1693"   cy="2437"   r="1610.5" stroke="#0099ee" stroke-width="165" fill="none"/>
+    <rect   x="1600"   y="486"     width="187"  height="3826" fill="#0099ee"/>
+    <circle cx="1693.5" cy="4672.5" r="201.5" fill="#0099ee"/>
+    <rect   x="1787"   y="2363"    width="1563" height="156"  fill="#0099ee"/>
+    <rect   x="1006"   y="4232"    width="1375" height="156"  fill="#0099ee"/>
+    <rect   x="1006"   y="486"     width="1375" height="156"  fill="#0099ee"/>
+    <circle cx="1693.5" cy="201.5"  r="201.5" fill="#0099ee"/>
+  </g>
+
+  <!-- TRADEZYNTH label at bottom -->
+  <text x="512" y="930" text-anchor="middle"
+    font-family="monospace" font-size="52" letter-spacing="8"
+    fill="rgba(0,100,180,0.28)" filter="url(#glow-dim)">TRADEZYNTH</text>
+</svg>
